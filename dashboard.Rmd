@@ -1,0 +1,371 @@
+---
+title: "Total Return Calculator"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: scroll
+    theme: cerulean
+runtime: shiny
+---
+
+<style type="text/css">
+.sidebar {  /* sidebar  */
+   font-size: 12px;
+</style>
+
+<style>
+#inputGroup > div {
+  width: 100px !important;
+  float: left !important;
+  margin-right: 10px !important;
+  vertical-align: top !important;
+}
+</style>
+
+<style>
+#heightGroup > div {
+  height: 70px !important;
+}
+</style>
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(quantmod)
+library(tidyquant)
+library(scales)
+library(ggthemes)
+```
+
+Inputs {.sidebar data-width=250}
+-----------------------------------------------------------------------
+##### Choose ticker #1:
+```{r}
+div(div(textInput('ticker1', label ='Ticker #1:', 'VTI'),
+dateInput("date1", label = "Purchase date:", '2016-01-19'), id = 'inputGroup'),
+div(numericInput("price1", label = "Purchase price:", 95.31),
+numericInput("shares1", label = "# of shares:", 95), id = 'inputGroup'), id = 'heightGroup')
+```
+</br>
+ 
+##### Choose ticker #2:
+```{r}
+div(div(textInput('ticker2', label = 'Ticker #2', 'VNQ'),
+dateInput("date2", label = "Purchase date:", '2015-10-20'), id = 'inputGroup'),
+div(numericInput("price2", label = "Purchase price:", 77.26),
+numericInput("shares2", label = "# of shares:", 90), id = 'inputGroup'), id = 'heightGroup')
+```
+</br>
+ 
+##### Choose ticker #3:
+```{r}
+div(div(textInput('ticker3', label = 'Ticker #3', 'VGK'),
+dateInput("date3", label = "Purchase date:", '2016-06-06'), id = 'inputGroup'),
+div(numericInput("price3", label = "Purchase price:", 45.56),
+numericInput("shares3", label = "# of shares:", 90), id = 'inputGroup'), id = 'heightGroup')
+```
+</br>
+ 
+##### Choose ticker #4:
+```{r}
+div(div(textInput('ticker4', label = 'Ticker #4', 'EXC'),
+dateInput("date4", label = "Purchase date:", '2016-01-19'), id = 'inputGroup'),
+div(numericInput("price4", label = "Purchase price:", 27.40),
+numericInput("shares4", label = "# of shares:", 175), id = 'inputGroup'), id = 'heightGroup')
+```
+</br>
+ 
+##### Choose ticker #5:
+```{r}
+div(div(textInput('ticker5', label = 'Ticker #5', ''),
+dateInput("date5", label = "Purchase date:", ''), id = 'inputGroup'),
+div(numericInput("price5", label = "Purchase price:", 0.00),
+numericInput("shares5", label = "# of shares:", 0), id = 'inputGroup'), id = 'heightGroup')
+```
+</br>
+ 
+##### Choose ticker #6:
+```{r}
+div(div(textInput('ticker6', label = 'Ticker #6', ''),
+dateInput("date6", label = "Purchase date:", ''), id = 'inputGroup'),
+div(numericInput("price6", label = "Purchase price:", 0.00),
+numericInput("shares6", label = "# of shares:", 0), id = 'inputGroup'), id = 'heightGroup')
+```
+</br>
+ 
+##### Choose ticker #7:
+```{r}
+div(div(textInput('ticker7', label = 'Ticker #7', ''),
+dateInput("date7", label = "Purchase date:", ''), id = 'inputGroup'),
+div(numericInput("price7", label = "Purchase price:", 0.00),
+numericInput("shares7", label = "# of shares:", 0), id = 'inputGroup'), id = 'heightGroup')
+```
+</br>
+ 
+##### Choose ticker #8:
+```{r}
+div(div(textInput('ticker8', label = 'Ticker #8', ''),
+dateInput("date8", label = "Purchase date:", ''), id = 'inputGroup'),
+div(numericInput("price8", label = "Purchase price:", 0.00),
+numericInput("shares8", label = "# of shares:", 0), id = 'inputGroup'), id = 'heightGroup')
+```
+</br>
+ 
+##### Choose ticker #9:
+```{r}
+div(div(textInput('ticker9', label = 'Ticker #9', ''),
+dateInput("date9", label = "Purchase date:", ''), id = 'inputGroup'),
+div(numericInput("price9", label = "Purchase price:", 0.00),
+numericInput("shares9", label = "# of shares:", 0), id = 'inputGroup'), id = 'heightGroup')
+```
+
+Column {data-width=500}
+-----------------------------------------------------------------------
+
+### Returns (as of `r Sys.Date()-1`)
+
+```{r echo = FALSE}
+renderTable({
+    
+    if(input$ticker1 != '' & !is.na(input$ticker1)){
+        getSymbols(input$ticker1, src = "yahoo", from = input$date1, to = Sys.Date())
+    }
+    if(input$ticker2 != '' & !is.na(input$ticker2)){
+        getSymbols(input$ticker2, src = "yahoo", from = input$date2, to = Sys.Date())
+    }
+    if(input$ticker3 != '' & !is.na(input$ticker3)){
+        getSymbols(input$ticker3, src = "yahoo", from = input$date3, to = Sys.Date())
+    }
+    if(input$ticker4 != '' & !is.na(input$ticker4)){
+        getSymbols(input$ticker4, src = "yahoo", from = input$date4, to = Sys.Date())
+    }
+    if(input$ticker5 != '' & !is.na(input$ticker5)){
+        getSymbols(input$ticker5, src = "yahoo", from = input$date5, to = Sys.Date())
+    }
+    if(input$ticker6 != '' & !is.na(input$ticker6)){
+        getSymbols(input$ticker6, src = "yahoo", from = input$date6, to = Sys.Date())
+    }
+    if(input$ticker7 != '' & !is.na(input$ticker7)){
+        getSymbols(input$ticker7, src = "yahoo", from = input$date7, to = Sys.Date())
+    }
+    if(input$ticker8 != '' & !is.na(input$ticker8)){
+        getSymbols(input$ticker8, src = "yahoo", from = input$date8, to = Sys.Date())
+    }
+    if(input$ticker9 != '' & !is.na(input$ticker9)){
+        getSymbols(input$ticker9, src = "yahoo", from = input$date9, to = Sys.Date())
+    }
+
+    dat <- map_df(mget(ls(pattern = '[A-Z]{1,5}')), function(x){
+        tmp <- x %>%
+            as_tibble(preserve_row_names = TRUE) %>%
+            mutate(ticker = gsub('([A-Z]+)(\\..*$)','\\1',colnames(x)[2]),
+                   date = as.Date(row.names))
+
+        colnames(tmp) <- map_chr(colnames(tmp), function(y){
+            if(grepl('^[A-Z]+\\.', y)) gsub('([A-Z]+\\.)(.*$)','\\2',y)
+            else y
+        })
+
+        select(tmp, ticker, date, close = Close, adj_close = Adjusted)
+    })
+    
+    input_list <- reactiveValuesToList(input)
+    
+    input_tickers <- input_list[grep('ticker', names(input_list))]
+    input_tickers <- input_tickers[!is.na(input_tickers)]
+    input_tickers <- input_tickers[order(names(input_tickers))]
+
+    input_dates <- input_list[grep('date', names(input_list))]
+    input_dates <- input_dates[!is.na(input_dates)]
+    input_dates <- input_dates[order(names(input_dates))]
+
+    input_shares <- input_list[grep('shares', names(input_list))]
+    input_shares <- input_shares[!is.na(input_shares)]
+    input_shares <- input_shares[order(names(input_shares))]
+    
+    input_prices <- input_list[grep('price', names(input_list))]
+    input_prices <- input_prices[!is.na(input_prices)]
+    input_prices <- input_prices[order(names(input_prices))]
+    
+    percent_func <- function(x, digits = 1, format = 'f') {
+        paste0(formatC(100 * x, format = format, digits = digits), "%")
+    }
+    
+    return_func <- function(w, x, y){
+        if(nrow(filter(dat, ticker == w)) > 0){
+            tmp_dat <- dat %>%
+                filter(ticker == w) %>%
+                filter(date == min(date) | date == max(date)) %>%
+                arrange(date) %>%
+                summarise(ticker = w,
+                    current_price = close[2],
+                    purchase_price = ifelse(y == 0, close[1], y),
+                    initial_value = x*purchase_price,
+                    current_value = x*close[2],
+                    initial_value_adj = x*(adj_close[1] - (close[1] - purchase_price)),
+                    total_return = current_value - initial_value_adj,
+                    price_return = current_value - initial_value,
+                    div_return = total_return - price_return,
+                    pct_total_return = total_return/initial_value,
+                    pct_price_return = price_return/initial_value,
+                    pct_div_return = div_return/initial_value,
+                    delta_days = as.numeric(max(date) - min(date)),
+                    pct_total_return_ann = (1 + pct_total_return)^(365/delta_days) - 1,
+                    pct_div_return_ann = (1 + pct_div_return)^(365/delta_days) - 1,
+                    pct_price_return_ann = (1 + pct_price_return)^(365/delta_days) - 1) %>%
+                ungroup()
+        }
+    }
+    
+    return_dat <- pmap_df(list(input_tickers, input_shares, input_prices), return_func)
+     
+    return_dat_disp <- return_dat %>%
+        mutate(weight = percent_func(current_value/sum(current_value)),
+            `purchase price` = dollar(purchase_price),
+            `current price` = dollar(current_price),
+            `current value` = dollar(round(current_value, digits = 0)), 
+            `total return` = dollar(round(total_return, digits = 0)),
+            `% total return` = percent_func(pct_total_return),
+            `% price return` = percent_func(pct_price_return),
+            `% div return` = percent_func(pct_div_return),
+            `% div AR` = percent_func(pct_div_return_ann),
+            `% total AR` = percent_func(pct_total_return_ann)) %>%
+        select(ticker, weight, `purchase price`, `current price`, `current value`, `total return`,
+            `% total return`, `% price return`, `% div return`, `% total AR`, `% div AR`)
+
+    
+    sum_return_dat <- return_dat %>%
+        summarise(sum_current_value = sum(current_value),
+            sum_total_return = sum(total_return),
+            sum_pct_total_return = sum(total_return)/sum(initial_value),
+            sum_pct_price_return = sum(price_return)/sum(initial_value),
+            sum_pct_div_return = sum(div_return)/sum(initial_value),
+            sum_pct_div_return_ann = (1 + sum(div_return)/sum(initial_value))^(365/max(delta_days)) - 1,
+            sum_pct_total_return_ann = (1 + sum(total_return)/sum(initial_value))^(365/max(delta_days)) - 1) %>%
+        mutate(ticker = 'TOTAL',
+            weight = '100%',
+            `purchase price` = '',
+            `current price` = '',
+            `current value` = dollar(round(sum_current_value, digits = 0)), 
+            `total return` = dollar(round(sum_total_return, digits = 0)),
+            `% total return` = percent_func(sum_pct_total_return),
+            `% price return` = percent_func(sum_pct_price_return),
+            `% div return` = percent_func(sum_pct_div_return),
+            `% div AR` = percent_func(sum_pct_div_return_ann),
+            `% total AR` = percent_func(sum_pct_total_return_ann)) %>%
+        select(ticker, weight, `purchase price`, `current price`, `current value`, `total return`,
+            `% total return`, `% price return`, `% div return`, `% total AR`, `% div AR`)
+    
+    display_tbl <- rbind(return_dat_disp, sum_return_dat)
+
+}, align = 'c', striped = TRUE, hover = TRUE)
+```
+
+
+###
+
+```{r echo=FALSE}
+renderPlot({
+    
+    input_list <- reactiveValuesToList(input)
+    
+    input_tickers <- input_list[grep('ticker', names(input_list))]
+    input_tickers <- input_tickers[!is.na(input_tickers)]
+    input_tickers <- input_tickers[order(names(input_tickers))]
+    input_tickers[length(input_tickers)+1] <- 'SPY'
+
+    input_dates <- input_list[grep('date', names(input_list))]
+    input_dates <- input_dates[!is.na(input_dates)]
+    input_dates <- input_dates[order(names(input_dates))]
+    input_dates[length(input_dates)+1] <- min(unlist(input_dates))
+
+    input_shares <- input_list[grep('shares', names(input_list))]
+    input_shares <- input_shares[!is.na(input_shares)]
+    input_shares <- input_shares[order(names(input_shares))]
+    input_shares[length(input_shares)+1] <- 1
+    
+    input_prices <- input_list[grep('price', names(input_list))]
+    input_prices <- input_prices[!is.na(input_prices)]
+    input_prices <- input_prices[order(names(input_prices))]
+    input_prices[length(input_prices)+1] <- 0
+    
+    if(input$ticker1 != '' & !is.na(input$ticker1)){
+        getSymbols(input$ticker1, src = "yahoo", from = input$date1, to = Sys.Date())
+    }
+    if(input$ticker2 != '' & !is.na(input$ticker2)){
+        getSymbols(input$ticker2, src = "yahoo", from = input$date2, to = Sys.Date())
+    }
+    if(input$ticker3 != '' & !is.na(input$ticker3)){
+        getSymbols(input$ticker3, src = "yahoo", from = input$date3, to = Sys.Date())
+    }
+    if(input$ticker4 != '' & !is.na(input$ticker4)){
+        getSymbols(input$ticker4, src = "yahoo", from = input$date4, to = Sys.Date())
+    }
+    if(input$ticker5 != '' & !is.na(input$ticker5)){
+        getSymbols(input$ticker5, src = "yahoo", from = input$date5, to = Sys.Date())
+    }
+    if(input$ticker6 != '' & !is.na(input$ticker6)){
+        getSymbols(input$ticker6, src = "yahoo", from = input$date6, to = Sys.Date())
+    }
+    if(input$ticker7 != '' & !is.na(input$ticker7)){
+        getSymbols(input$ticker7, src = "yahoo", from = input$date7, to = Sys.Date())
+    }
+    if(input$ticker8 != '' & !is.na(input$ticker8)){
+        getSymbols(input$ticker8, src = "yahoo", from = input$date8, to = Sys.Date())
+    }
+    if(input$ticker9 != '' & !is.na(input$ticker9)){
+        getSymbols(input$ticker9, src = "yahoo", from = input$date9, to = Sys.Date())
+    }
+        getSymbols('SPY', src = "yahoo", from = min(unlist(input_dates)), to = Sys.Date())
+
+    dat <- map_df(mget(ls(pattern = '[A-Z]{1,5}')), function(x){
+        tmp <- x %>%
+            as_tibble(preserve_row_names = TRUE) %>%
+            mutate(ticker = gsub('([A-Z]+)(\\..*$)','\\1',colnames(x)[2]),
+                   date = as.Date(row.names))
+
+        colnames(tmp) <- map_chr(colnames(tmp), function(y){
+            if(grepl('^[A-Z]+\\.', y)) tolower(gsub('([A-Z]+\\.)(.*$)','\\2',y))
+            else tolower(y)
+        })
+
+        select(tmp, ticker, date, close, adj_close = adjusted)
+    })
+
+   plot_func <- function(w, x, y){
+    if(nrow(filter(dat, ticker == w)) > 0){
+        tmp_dat <- dat %>%
+            filter(ticker == w) %>%
+            mutate(flag = ifelse(ticker == 'SPY', 'benchmark', 'portfolio')) %>%
+            arrange(date) %>%
+            mutate(purchase_price = ifelse(y == 0, close[1], y),
+                   initial_value = x*purchase_price,
+                   initial_adjustment = close[1] - adj_close[1],
+                   adjustment = initial_adjustment - (close - adj_close),
+                   total_return = x*(close + adjustment) - initial_value,
+                   pct_total_return = total_return/initial_value) %>%
+            ungroup()
+    }
+}
+
+    plot_dat <- pmap_df(list(input_tickers, input_shares, input_prices), plot_func)
+
+    plot_dat %>%
+        group_by(flag, date) %>%
+        summarize(total_return = sum(total_return),
+              initial_value = sum(initial_value),
+              pct_total_return = total_return/initial_value) %>%
+        ggplot(aes(x = date, y = pct_total_return, color = flag)) + geom_line() +
+            ggtitle("Portfolio total return vs benchmark (SPY)") +
+            theme_tufte(base_family = 'Tahoma') +
+            theme(panel.grid.major = element_line(size = 0.1, color = "grey"),
+            axis.text.y = element_text(size = 10),
+            axis.text.x = element_text(size = 10),
+            axis.title.x = element_blank(), axis.title.y=element_blank(),
+            plot.title = element_text(hjust = 0.5, face = 'bold'),
+            legend.position = 'left', legend.title = element_blank(),
+            legend.text = element_text(size = 12)) +
+            scale_y_continuous(labels = scales::percent, position = 'right')
+    
+})
+```
+
