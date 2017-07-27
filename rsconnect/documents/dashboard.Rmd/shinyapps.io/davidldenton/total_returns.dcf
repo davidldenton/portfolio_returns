@@ -2,9 +2,9 @@ name: total_returns
 title: total_returns
 account: davidldenton
 server: shinyapps.io
-appId: 199655
-bundleId: 916419
+appId: 200052
+bundleId: 918051
 url: https://davidldenton.shinyapps.io/total_returns/
-when: 1501076027.40954
+when: 1501169469.69591
 asMultiple: FALSE
 asStatic: FALSE

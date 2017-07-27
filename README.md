@@ -1,7 +1,7 @@
 ## Portfolio total returns calculator (via R Flexdashboard)
 
 * /rsconnect
-	* cached data for Flexdashboard
+	* directory for compiled shiny app
 * README.md
 	* You are reading this right now.
 * dashboard.Rmd

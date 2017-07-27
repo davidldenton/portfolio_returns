@@ -1,5 +1,5 @@
 ---
-title: "Total Return Calculator"
+title: "Portfolio Total Return Dashboard"
 output: 
   flexdashboard::flex_dashboard:
     orientation: columns

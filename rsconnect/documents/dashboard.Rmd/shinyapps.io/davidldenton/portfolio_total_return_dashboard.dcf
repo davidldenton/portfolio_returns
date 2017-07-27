@@ -1,0 +1,10 @@
+name: portfolio_total_return_dashboard
+title: Portfolio Total Return Dashboard
+account: davidldenton
+server: shinyapps.io
+appId: 200048
+bundleId: 918041
+url: https://davidldenton.shinyapps.io/portfolio_total_return_dashboard/
+when: 1501169215.01328
+asMultiple: FALSE
+asStatic: FALSE
