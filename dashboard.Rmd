@@ -36,7 +36,7 @@ library(scales)
 library(ggthemes)
 ```
 
-Inputs {.sidebar data-width=250}
+Inputs {.sidebar data-width=260}
 -----------------------------------------------------------------------
 ##### Choose ticker #1:
 ```{r}
@@ -118,7 +118,7 @@ div(numericInput("price9", label = "Purchase price:", 0.00),
 numericInput("shares9", label = "# of shares:", 0), id = 'inputGroup'), id = 'heightGroup')
 ```
 
-Column {data-width=500}
+Column
 -----------------------------------------------------------------------
 
 ### Returns (as of `r Sys.Date()-1`)
