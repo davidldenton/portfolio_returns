@@ -25,5 +25,5 @@ This HTML dashboard was created with R and the flexdashboard library. To create 
 
 Link to dashboard: https://davidldenton.shinyapps.io/portfolio_returns/
 
-Upcoming features:
+### Upcoming features:
 * optional end date for backtesting
