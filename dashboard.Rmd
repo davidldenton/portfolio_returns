@@ -164,7 +164,7 @@ renderTable({
             arrange(date) %>%
             summarise(ticker = tickeri, shares = sharesi,
                 current_price = close[2],
-                purchase_price = ifelse(pricei == 0, close[2], pricei),
+                purchase_price = ifelse(pricei == 0, close[1], pricei),
                 initial_value = sharesi*purchase_price,
                 current_value = sharesi*close[2],
                 initial_value_adj = sharesi*(adjusted[1] - (close[1] - purchase_price)),
