@@ -22,28 +22,8 @@ runtime: shiny
 </style>
 
 <style>
-#inputGroup2 > div {
-  width: 100px !important;
-  float: left !important;
-  margin-right: 5px !important;
-  vertical-align: top !important;
-}
-</style>
-
-<style>
 #heightGroup > div {
   height: 70px !important;
-}
-</style>
-
-<style>
-#benchmark > div {
-display: inline-block;
-margin-left: auto;
-margin-right: auto;
-height: auto;
-width : auto ;
-white-space: nowrap ;
 }
 </style>
 
