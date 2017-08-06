@@ -323,7 +323,7 @@ renderPlot({
             initial_value = sum(initial_value),
             pct_total_return = total_return/initial_value) %>%
         ggplot(aes(x = date, y = pct_total_return, color = flag)) + geom_line() +
-        ggtitle("Portfolio total return vs benchmark (SPY)") +
+        ggtitle(paste('Portfolio total return vs benchmark (',input$benchmark_id,')', sep = '')) +
         theme_tufte(base_family = 'Tahoma') +
         theme(panel.grid.major = element_line(size = 0.1, color = "grey"),
             axis.text.y = element_text(size = 10),
