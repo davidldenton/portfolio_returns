@@ -2,7 +2,6 @@
 title: "Portfolio Total Return Dashboard"
 output: 
   flexdashboard::flex_dashboard:
-    orientation: columns
     vertical_layout: scroll
     theme: cerulean
 runtime: shiny
@@ -23,8 +22,28 @@ runtime: shiny
 </style>
 
 <style>
+#inputGroup2 > div {
+  width: 100px !important;
+  float: left !important;
+  margin-right: 5px !important;
+  vertical-align: top !important;
+}
+</style>
+
+<style>
 #heightGroup > div {
   height: 70px !important;
+}
+</style>
+
+<style>
+#benchmark > div {
+display: inline-block;
+margin-left: auto;
+margin-right: auto;
+height: auto;
+width : auto ;
+white-space: nowrap ;
 }
 </style>
 
@@ -230,9 +249,13 @@ renderTable({
 }, align = 'c', striped = TRUE, hover = TRUE)
 ```
 
+###
+```{r}
+div(style="display: inline-block;vertical-align:top; width: 100px; height: 20px",paste('Benchmark:'))
+div(style="display: inline-block;vertical-align:top; width: 100px; height: 20px",selectInput('benchmark_id', NULL, choices =  c('SPY', 'SHY', 'IWM', 'BND', 'VT'), selectize = FALSE, size = 1))
+```
 
 ###
-
 ```{r echo=FALSE}
 renderPlot({
 
@@ -281,8 +304,8 @@ renderPlot({
    
     }
     
-    tmp <- tq_get('SPY', get = "stock.prices", from = min(input_dates)) %>%
-        mutate(ticker = 'SPY', shares = 1, purchase_price = 0, flag = 'benchmark') %>%
+    tmp <- tq_get(input$benchmark_id, get = "stock.prices", from = min(input_dates)) %>%
+        mutate(ticker = input$benchmark_id, shares = 1, purchase_price = 0, flag = 'benchmark') %>%
         arrange(date) %>%
         mutate(purchase_price = ifelse(purchase_price == 0, close[1], purchase_price),
               initial_value = shares*purchase_price,
@@ -306,7 +329,7 @@ renderPlot({
             axis.text.y = element_text(size = 10),
             axis.text.x = element_text(size = 10),
             axis.title.x = element_blank(), axis.title.y=element_blank(),
-            plot.title = element_text(hjust = 0.5, face = 'bold'),
+            plot.title = element_text(hjust = 0.5, face = 'bold', size = 18),
             legend.position = 'left', legend.title = element_blank(),
             legend.text = element_text(size = 12)) +
         scale_y_continuous(labels = scales::percent, position = 'right')
