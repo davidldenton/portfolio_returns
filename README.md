@@ -3,7 +3,7 @@
 A portfolio's performance is often calculated as it's total price return - the difference between the initial value and the current value. This method overlooks returns from other sources such as dividends and stock splits. This dashboard calculates a portfolio's total return by adjusting the initial value of each position for additional returns and then comparing the adjusted value to the current value. The portfolio's aggregate results are also compared to a benchmark. Various choices are available via the drop-down menu in the middle of the page. The default selection is the S&P 500, as represented by the SPDR S&P 500 ETF from State Street (SPY).
 
 ### Instructions
-Select the ticker symbol, purchase price & date, and the number of shares from the scrolling bar on the left. If the purchase price is left at the default value (zero), the closing price on the purchase date will be used. Separate purchases of the same security should be entered individually.
+Select the ticker symbol, purchase price & date, and the number of shares from the scrolling bar on the left. If the purchase price is set to zero (0), the closing price on the purchase date will be used. Separate purchases of the same security should be entered individually.
 
 Results are then displayed in two windows: a table of values at the top, and a comparison chart at the bottom.
 1. Data table
