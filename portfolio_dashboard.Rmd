@@ -146,11 +146,15 @@ renderTable({
     input_prices <- input_prices[order(names(input_prices))]
     input_prices <- unlist(input_prices)
     
+    #ensure all vectors are the same length by trimming to the length of the ticker list
+    input_dates <- input_dates[1:length(input_tickers)]
+    input_shares <- input_shares[1:length(input_tickers)]
+    input_prices <- input_prices[1:length(input_tickers)]
+    
     percent_func <- function(x, digits = 1, format = 'f') {
         paste0(formatC(100 * x, format = format, digits = digits), "%")
     }
     
-   
     return_func <- function(w, x, y, z){
         tmp <- tq_get(w, get = "stock.prices", from = z) %>%
             filter(date == min(date) | date == max(date)) %>%
@@ -246,25 +250,23 @@ renderPlot({
     input_dates <- unlist(input_dates)
 
     input_shares <- input_list[grep('shares', names(input_list))]
-    input_shares <- input_shares[input_shares != '']
+    input_shares <- input_shares[!is.na(input_shares)]
     input_shares <- input_shares[order(names(input_shares))]
     input_shares <- unlist(input_shares)
     
     input_prices <- input_list[grep('price', names(input_list))]
-    input_prices <- input_prices[input_prices != '']
+    input_prices <- input_prices[!is.na(input_prices)]
     input_prices <- input_prices[order(names(input_prices))]
     input_prices <- unlist(input_prices)
     
-    plot_dat <- tibble()
-
-    for(i in 1:length(input_tickers)){
-        tickeri <- input_tickers[i]
-        datei <- input_dates[i]
-        sharei <- input_shares[i]
-        pricei <- input_prices[i]
-
-        tmp <- tq_get(tickeri, get = "stock.prices", from = datei) %>%
-            mutate(ticker = tickeri, shares = sharei, purchase_price = pricei, flag = 'portfolio') %>%
+    #ensure all vectors are the same length by trimming to the length of the ticker list
+    input_dates <- input_dates[1:length(input_tickers)]
+    input_shares <- input_shares[1:length(input_tickers)]
+    input_prices <- input_prices[1:length(input_tickers)]
+    
+    plot_return_func <- function(w, x, y, z){
+        tmp <- tq_get(w, get = "stock.prices", from = z) %>%
+            mutate(ticker = w, shares = x, purchase_price = y, flag = 'portfolio') %>%
             arrange(date) %>%
             mutate(purchase_price = ifelse(purchase_price == 0, close[1], purchase_price),
                 initial_value = shares*purchase_price,
@@ -273,10 +275,10 @@ renderPlot({
                 total_return = shares*(close + adjustment) - initial_value,
                 pct_total_return = total_return/initial_value) %>%
             ungroup()
-
-        plot_dat <- rbind(plot_dat, tmp)
-   
+    
     }
+    
+    plot_dat <- pmap_df(list(input_tickers, input_shares, input_prices, input_dates), plot_return_func)
     
     tmp <- tq_get(input$benchmark_id, get = "stock.prices", from = min(input_dates)) %>%
         mutate(ticker = input$benchmark_id, shares = 1, purchase_price = 0, flag = 'benchmark') %>%
