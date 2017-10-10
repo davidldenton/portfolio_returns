@@ -49,8 +49,8 @@ numericInput("shares1", label = "# of shares:", 120), id = 'inputGroup'), id = '
 ```{r}
 div(div(textInput('ticker2', label = 'Ticker #2', 'VNQ'),
 dateInput("date2", label = "Purchase date:", '2015-10-20'), id = 'inputGroup'),
-div(numericInput("price2", label = "Purchase price:", 77.26),
-numericInput("shares2", label = "# of shares:", 50), id = 'inputGroup'), id = 'heightGroup')
+div(numericInput("price2", label = "Purchase price:", 80.82),
+numericInput("shares2", label = "# of shares:", 40), id = 'inputGroup'), id = 'heightGroup')
 ```
 </br>
  
@@ -59,7 +59,7 @@ numericInput("shares2", label = "# of shares:", 50), id = 'inputGroup'), id = 'h
 div(div(textInput('ticker3', label = 'Ticker #3', 'VGK'),
 dateInput("date3", label = "Purchase date:", '2016-06-06'), id = 'inputGroup'),
 div(numericInput("price3", label = "Purchase price:", 45.56),
-numericInput("shares3", label = "# of shares:", 100), id = 'inputGroup'), id = 'heightGroup')
+numericInput("shares3", label = "# of shares:", 120), id = 'inputGroup'), id = 'heightGroup')
 ```
 </br>
  
@@ -75,8 +75,8 @@ numericInput("shares4", label = "# of shares:", 175), id = 'inputGroup'), id = '
 ##### Choose ticker #5:
 ```{r}
 div(div(textInput('ticker5', label = 'Ticker #5', 'VNQ'),
-dateInput("date5", label = "Purchase date:", '2016-04-04'), id = 'inputGroup'),
-div(numericInput("price5", label = "Purchase price:", 0.00),
+dateInput("date5", label = "Purchase date:", '2016-02-24'), id = 'inputGroup'),
+div(numericInput("price5", label = "Purchase price:", 75.52),
 numericInput("shares5", label = "# of shares:", 30), id = 'inputGroup'), id = 'heightGroup')
 ```
 </br>
@@ -155,21 +155,20 @@ renderTable({
         paste0(formatC(100 * x, format = format, digits = digits), "%")
     }
     
-    return_func <- function(w, x, y, z){
-        tmp <- tq_get(w, get = "stock.prices", from = z) %>%
+    return_func <- function(ticker, shares, price, pdate){
+        tmp <- tq_get(ticker, get = "stock.prices", from = pdate) %>%
             filter(date == min(date) | date == max(date)) %>%
             arrange(date) %>%
-            summarise(ticker = w, shares = x,
+            summarise(ticker = ticker, shares = shares,
                 current_price = close[2],
-                purchase_price = ifelse(y == 0, close[1], y),
-                initial_value = x*purchase_price,
-                current_value = x*close[2],
-                initial_value_adj = x*(adjusted[1] - (close[1] - purchase_price)),
+                purchase_price = ifelse(price == 0, close[1], price),
+                initial_value = shares*purchase_price,
+                current_value = shares*close[2],
+                initial_value_adj = shares*(adjusted[1] - (close[1] - purchase_price)),
                 total_return = current_value - initial_value_adj,
                 price_return = current_value - initial_value,
                 div_return = total_return - price_return,
                 delta_days = as.numeric(max(date) - min(date)))
-    
     }
     
     return_dat <- pmap_df(list(input_tickers, input_shares, input_prices, input_dates), return_func)
@@ -237,78 +236,96 @@ div(style="display: inline-block;vertical-align:top; width: 100px; height: 20px"
 ```{r echo=FALSE}
 renderPlot({
 
-    input_list <- reactiveValuesToList(input)
-    
-    input_tickers <- input_list[grep('ticker', names(input_list))]
-    input_tickers <- input_tickers[input_tickers != '']
-    input_tickers <- input_tickers[order(names(input_tickers))]
-    input_tickers <- unlist(input_tickers)
-    
-    input_dates <- input_list[grep('date', names(input_list))]
-    input_dates <- input_dates[input_dates != '']
-    input_dates <- input_dates[order(names(input_dates))]
-    input_dates <- unlist(input_dates)
+  input_list <- reactiveValuesToList(input)
 
-    input_shares <- input_list[grep('shares', names(input_list))]
-    input_shares <- input_shares[!is.na(input_shares)]
-    input_shares <- input_shares[order(names(input_shares))]
-    input_shares <- unlist(input_shares)
+  input_tickers <- input_list[grep('ticker', names(input_list))]
+  input_tickers <- input_tickers[input_tickers != '']
+  input_tickers <- input_tickers[order(names(input_tickers))]
+  input_tickers <- unlist(input_tickers)
+
+  input_dates <- input_list[grep('date', names(input_list))]
+  input_dates <- input_dates[input_dates != '']
+  input_dates <- input_dates[order(names(input_dates))]
+  input_dates <- unlist(input_dates)
+
+  input_shares <- input_list[grep('shares', names(input_list))]
+  input_shares <- input_shares[!is.na(input_shares)]
+  input_shares <- input_shares[order(names(input_shares))]
+  input_shares <- unlist(input_shares)
+
+  input_prices <- input_list[grep('price', names(input_list))]
+  input_prices <- input_prices[!is.na(input_prices)]
+  input_prices <- input_prices[order(names(input_prices))]
+  input_prices <- unlist(input_prices)
+
+  #ensure all vectors are the same length by trimming to the length of the ticker list
+  input_dates <- input_dates[1:length(input_tickers)]
+  input_shares <- input_shares[1:length(input_tickers)]
+  input_prices <- input_prices[1:length(input_tickers)]
+
+  plot_return_func <- function(ticker, shares, price, pdate){
+    tmp <- tq_get(ticker, get = "stock.prices", from = pdate) %>%
+      mutate(ticker = ticker, shares = shares, purchase_price = price, flag = 'portfolio') %>%
+      arrange(date) %>%
+      mutate(purchase_price = ifelse(purchase_price == 0, close[1], purchase_price),
+             initial_value = shares*purchase_price,
+             initial_adjustment = close[1] - adjusted[1],
+             adjustment = initial_adjustment - (close - adjusted),
+             total_return = shares*(close + adjustment) - initial_value,
+             pct_total_return = total_return/initial_value) %>%
+  }
     
-    input_prices <- input_list[grep('price', names(input_list))]
-    input_prices <- input_prices[!is.na(input_prices)]
-    input_prices <- input_prices[order(names(input_prices))]
-    input_prices <- unlist(input_prices)
+  plot_dat <- pmap_df(list(input_tickers, input_shares, input_prices, input_dates), plot_return_func)
     
-    #ensure all vectors are the same length by trimming to the length of the ticker list
-    input_dates <- input_dates[1:length(input_tickers)]
-    input_shares <- input_shares[1:length(input_tickers)]
-    input_prices <- input_prices[1:length(input_tickers)]
-    
-    plot_return_func <- function(w, x, y, z){
-        tmp <- tq_get(w, get = "stock.prices", from = z) %>%
-            mutate(ticker = w, shares = x, purchase_price = y, flag = 'portfolio') %>%
-            arrange(date) %>%
-            mutate(purchase_price = ifelse(purchase_price == 0, close[1], purchase_price),
-                initial_value = shares*purchase_price,
-                initial_adjustment = close[1] - adjusted[1],
-                adjustment = initial_adjustment - (close - adjusted),
-                total_return = shares*(close + adjustment) - initial_value,
-                pct_total_return = total_return/initial_value) %>%
-            ungroup()
-    
-    }
-    
-    plot_dat <- pmap_df(list(input_tickers, input_shares, input_prices, input_dates), plot_return_func)
-    
-    tmp <- tq_get(input$benchmark_id, get = "stock.prices", from = min(input_dates)) %>%
-        mutate(ticker = input$benchmark_id, shares = 1, purchase_price = 0, flag = 'benchmark') %>%
-        arrange(date) %>%
-        mutate(purchase_price = ifelse(purchase_price == 0, close[1], purchase_price),
-              initial_value = shares*purchase_price,
-              initial_adjustment = close[1] - adjusted[1],
-              adjustment = initial_adjustment - (close - adjusted),
-              total_return = shares*(close + adjustment) - initial_value,
+  initial_values <- plot_dat %>%
+  group_by(date) %>%
+  summarise(initial_value = sum(initial_value))
+
+  bench_shares <- tq_get(input$benchmark_id, get = "stock.prices", from = min(input_dates)) %>%
+  inner_join(initial_values, by = 'date') %>%
+  filter(date %in% as.Date(input_dates, origin = '1970-01-01')) %>%
+  group_by(date) %>%
+  mutate(total_shares = sum(initial_value)/sum(close),
+         delta_shares = ifelse(is.na(sum(total_shares) - lag(sum(total_shares))), sum(total_shares), 
+                               total_shares - lag(sum(total_shares)))) %>%
+  pull(delta_shares)
+
+  bench_return_func <- function(ticker, shares, pdate){
+    tmp <- tq_get(ticker, get = "stock.prices", from = pdate) %>%
+      arrange(date) %>%
+      mutate(ticker = ticker, shares = shares, flag = 'benchmark',
+             purchase_price = close[1],
+             initial_value = (shares*purchase_price),
+             initial_adjustment = close[1] - adjusted[1],
+             adjustment = initial_adjustment - (close - adjusted),
+             total_return = shares*(close + adjustment) - initial_value,
+             pct_total_return = total_return/initial_value) %>%
+      ungroup()
+  }
+
+  input_dates <- unique(input_dates)
+  
+  bench_dat <- pmap_df(list(rep(input$benchmark_id, length(input_dates)), bench_shares, input_dates),
+                     bench_return_func)
+
+  plot_dat <- bind_rows(plot_dat, bench_dat)
+
+  plot_dat %>%
+    group_by(flag, date) %>%
+    summarize(total_return = sum(total_return),
+              initial_value = sum(initial_value),
               pct_total_return = total_return/initial_value) %>%
-        ungroup()
-    
-    plot_dat <- rbind(plot_dat, tmp)
-
-    plot_dat %>%
-        group_by(flag, date) %>%
-        summarize(total_return = sum(total_return),
-            initial_value = sum(initial_value),
-            pct_total_return = total_return/initial_value) %>%
-        ggplot(aes(x = date, y = pct_total_return, color = flag)) + geom_line() +
-        ggtitle(paste('Portfolio total return vs benchmark (',input$benchmark_id,')', sep = '')) +
-        theme_tufte(base_family = 'Tahoma') +
-        theme(panel.grid.major = element_line(size = 0.1, color = "grey"),
-            axis.text.y = element_text(size = 10),
-            axis.text.x = element_text(size = 10),
-            axis.title.x = element_blank(), axis.title.y=element_blank(),
-            plot.title = element_text(hjust = 0.5, face = 'bold', size = 18),
-            legend.position = 'left', legend.title = element_blank(),
-            legend.text = element_text(size = 12)) +
-        scale_y_continuous(labels = scales::percent, position = 'right')
+    ggplot(aes(x = date, y = pct_total_return, color = flag)) + geom_line() +
+    ggtitle('Portfolio total return vs benchmark') +
+    theme_tufte(base_family = 'Tahoma') +
+    theme(panel.grid.major = element_line(size = 0.1, color = "grey"),
+          axis.text.y = element_text(size = 10),
+          axis.text.x = element_text(size = 10),
+          axis.title.x = element_blank(), axis.title.y=element_blank(),
+          plot.title = element_text(hjust = 0.5, face = 'bold', size = 18),
+          legend.position = 'left', legend.title = element_blank(),
+          legend.text = element_text(size = 12)) +
+    scale_y_continuous(labels = scales::percent, position = 'right')
     
 })
 ```
