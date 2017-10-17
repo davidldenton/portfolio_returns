@@ -83,10 +83,10 @@ numericInput("shares5", label = "# of shares:", 30), id = 'inputGroup'), id = 'h
  
 ##### Choose ticker #6:
 ```{r}
-div(div(textInput('ticker6', label = 'Ticker #6', ''),
-dateInput("date6", label = "Purchase date:", ''), id = 'inputGroup'),
-div(numericInput("price6", label = "Purchase price:", NA),
-numericInput("shares6", label = "# of shares:", NA), id = 'inputGroup'), id = 'heightGroup')
+div(div(textInput('ticker6', label = 'Ticker #6', 'VNQ'),
+dateInput("date6", label = "Purchase date:", '2016-02-25'), id = 'inputGroup'),
+div(numericInput("price6", label = "Purchase price:", 0),
+numericInput("shares6", label = "# of shares:", 5), id = 'inputGroup'), id = 'heightGroup')
 ```
 </br>
  
