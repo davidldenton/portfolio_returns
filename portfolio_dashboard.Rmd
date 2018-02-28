@@ -227,8 +227,8 @@ renderTable({
 
 ###
 ```{r}
-div(style="display: inline-block;vertical-align:top; width: 100px; height: 20px",paste('Benchmark:'))
-div(style="display: inline-block;vertical-align:top; width: 100px; height: 20px",selectInput('benchmark_id', NULL, choices =  c('SPY', 'SHY', 'IWM', 'BND', 'VT'), selectize = FALSE, size = 1))
+div(style="display: inline-block;vertical-align:top; width: 100px; height: 22px",paste('Benchmark:'))
+div(style="display: inline-block;vertical-align:top; width: 100px; height: 22px",selectInput('benchmark_id', NULL, choices =  c('SPY', 'SHY', 'IWM', 'BND', 'VT'), selectize = FALSE, size = 1))
 ```
 
 ###

@@ -25,6 +25,7 @@ Results are then displayed in two windows: a table of values at the top, and a c
 This HTML dashboard was created with R and the flexdashboard library. To create a version to track your own portfolio, copy the dashboard.Rmd file and adjust the default values to match your portfolio positions.
 
 Link to dashboard: https://davidldenton.shinyapps.io/portfolio_returns/
+Accompanying blog post: https://www.fishingwithdave.net/post/portfolio_returns/
 
 ### Upcoming features:
 * optional end date for backtesting
